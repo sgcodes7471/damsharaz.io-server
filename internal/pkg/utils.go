@@ -59,7 +59,12 @@ func CreateRoomId() string {
 	
 	rand.Seed(time.Now().UnixNano());
 
-	result := CHARSET[rand.Intn(LENGTH)];
+	result := make([]byte , LENGTH);
+	
+	for i := range result {
+		result[i] = CHARSET[rand.Intn(len(CHARSET))];
+	}
+
 	roomId := string(result);
 
 	return roomId
