@@ -4,6 +4,7 @@ import(
 	"fmt"
 	"os" 
 	"time"
+	"runtime/debug"
 	"sgcodes7471/damsharaz.io-server/internal/config"
 )
 
@@ -28,4 +29,17 @@ func Log(message string , category string) {
 		fmt.Println(newContent)
 		return;
 	}
+}
+
+func Recover_Panic() {
+	if r := recover(); r != nil {
+		stack := debug.Stack();
+
+		Log(
+			fmt.Sprintf(
+				"PANIC : %v\nSTACK : %s" , r , stack ,
+			) , 
+			"ERROR" , 
+		);
+	}	
 }

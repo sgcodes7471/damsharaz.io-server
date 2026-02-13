@@ -36,8 +36,17 @@ func CreateRoom(w http.ResponseWriter , r *http.Request) {
 
 	if(err != nil) {
 		pkg.Log("Error in Creating Token : " + err.Error() , "ERROR");
-		pkg.Log("POST /api/v1/room " + "500" , "INFO");
+		pkg.Log("POST /api/v1/room " + "500" , "WARNING");
 		w.WriteHeader(500);
+		return;
+	}
+
+	err = db.Redis_Set(roomId , token);
+
+	if(err != nil) {
+		pkg.Log("POST /api/v1/room " + "500" , "WARNING");
+		w.WriteHeader(500);
+		panic(err);
 		return;
 	}
 
@@ -63,14 +72,7 @@ func CreateRoom(w http.ResponseWriter , r *http.Request) {
 
 	if(err != nil) {
 		pkg.Log("Error occured in CreateRoom() : " + err.Error() , "ERROR");
-		w.WriteHeader(500);
-		return;
-	}
-
-	err = db.Redis_Set(roomId , token);
-
-	if(err != nil) {
-		pkg.Log("Error in Writing to Redis : " + err.Error() , "ERROR");
+		pkg.Log("POST /api/v1/room " + "500" , "WARNING");
 		w.WriteHeader(500);
 		return;
 	}
