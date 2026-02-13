@@ -14,7 +14,7 @@ var ctx = context.Background();
 
 func Redis_Init() {
 	if(Redis_Client != nil) {
-		return;
+		return
 	}
 
 	Redis_Client = redis.NewClient(
@@ -28,7 +28,7 @@ func Redis_Init() {
 
 func Redis_Close() {
 	if(Redis_Client != nil) {
-		return;
+		return
 	}
 
 	Redis_Client.Close();
@@ -41,8 +41,7 @@ func Redis_Set(key string , value string) error {
 
 	err := Redis_Client.Set(ctx , key , value , 3600*time.Second).Err();
 	if(err != nil) {
-		panic(err);
-		return nil;
+		return err;
 	}
 
 	return nil;
@@ -55,7 +54,6 @@ func Redis_Get(key string) (string , error) {
 
 	value , err := Redis_Client.Get(ctx , key).Result();
 	if(err != nil) {
-		panic(err);
 		return "" , err;
 	}
 

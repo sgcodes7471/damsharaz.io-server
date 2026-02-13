@@ -14,6 +14,8 @@ func Log(message string , category string) {
 		0644 ,
 	);
 
+	defer file.Close();
+
 	if(err != nil) {
 		return;
 	}
@@ -26,6 +28,4 @@ func Log(message string , category string) {
 		fmt.Println(newContent)
 		return;
 	}
-
-	defer file.Close();
 }
