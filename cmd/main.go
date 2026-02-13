@@ -4,6 +4,7 @@ import(
 	"github.com/joho/godotenv"
 	"sgcodes7471/damsharaz.io-server/internal/server" 
 	"sgcodes7471/damsharaz.io-server/internal/pkg" 
+	"sgcodes7471/damsharaz.io-server/internal/db" 
 )
 
 func main() {
@@ -13,6 +14,8 @@ func main() {
 		pkg.Log("FAILED TO LOAD ENVs" , "ERROR");
 		return;
 	}
+
+	db.Redis_Init();
 
 	server.WSServer()
 	server.HTTPServer()

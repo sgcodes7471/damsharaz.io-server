@@ -5,6 +5,7 @@ import(
 	"net/http"
 	"strconv"
 	"sgcodes7471/damsharaz.io-server/internal/pkg"
+	"sgcodes7471/damsharaz.io-server/internal/db"
 )
 
 type CreateRoomResponse struct {
@@ -62,6 +63,14 @@ func CreateRoom(w http.ResponseWriter , r *http.Request) {
 
 	if(err != nil) {
 		pkg.Log("Error occured in CreateRoom() : " + err.Error() , "ERROR");
+		w.WriteHeader(500);
+		return;
+	}
+
+	err = db.Redis_Set(roomId , token);
+
+	if(err != nil) {
+		pkg.Log("Error in Writing to Redis : " + err.Error() , "ERROR");
 		w.WriteHeader(500);
 		return;
 	}
