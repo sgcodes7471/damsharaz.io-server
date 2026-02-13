@@ -1,9 +1,9 @@
 package server
 
 import( 
-	"fmt"
+	"sgcodes7471/damsharaz.io-server/internal/pkg"
 )
 
 func WSServer() {
-	fmt.Println("Websockers not supported yet")
+	pkg.Log("Websockets not supported yet" , "INFO");
 }

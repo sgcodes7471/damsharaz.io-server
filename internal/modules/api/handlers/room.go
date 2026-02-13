@@ -1,9 +1,9 @@
 package handlers
 
 import(
-	"fmt"
 	"encoding/json"
 	"net/http"
+	"strconv"
 	"sgcodes7471/damsharaz.io-server/internal/pkg"
 )
 
@@ -23,8 +23,8 @@ func CreateRoom(w http.ResponseWriter , r *http.Request) {
 
 	var reqBody CreateRoomRequest;
 	if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
-		fmt.Println("Error in Decoding the Request Body");
-		fmt.Println(err);
+		pkg.Log("Error in Decoding the Request Body " + err.Error() , "ERROR")
+		pkg.Log("POST /api/v1/room " + "400" , "INFO");
 		w.WriteHeader(400);
 		return;
 	}
@@ -34,6 +34,8 @@ func CreateRoom(w http.ResponseWriter , r *http.Request) {
 	token , err := pkg.CreateToken(reqBody.Name , roomId)
 
 	if(err != nil) {
+		pkg.Log("Error in Creating Token : " + err.Error() , "ERROR");
+		pkg.Log("POST /api/v1/room " + "500" , "INFO");
 		w.WriteHeader(500);
 		return;
 	}
@@ -59,9 +61,10 @@ func CreateRoom(w http.ResponseWriter , r *http.Request) {
 	err = json.NewEncoder(w).Encode(res);
 
 	if(err != nil) {
-		fmt.Println("Some Error occured in CreateRoom()");
-		fmt.Println(err);
+		pkg.Log("Error occured in CreateRoom() : " + err.Error() , "ERROR");
 		w.WriteHeader(500);
 		return;
 	}
+
+	pkg.Log("POST /api/v1/room " + strconv.Itoa(http.StatusOK) , "INFO");
 }

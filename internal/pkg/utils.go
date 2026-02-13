@@ -24,8 +24,6 @@ func CreateToken(name string , roomId string) (string , error) {
 	signedToken , err := token.SignedString(secretKey);
 
 	if(err != nil) {
-		fmt.Println("TOKEN NOT CREATED IN CreateToken()");
-		fmt.Println(err);
 		return  "" , err;
 	}
 

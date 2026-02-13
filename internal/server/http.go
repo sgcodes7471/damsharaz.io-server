@@ -1,10 +1,11 @@
 package server
 
 import(
+	"os"
 	"net/http" 
-	"fmt"
 	"github.com/go-chi/chi"
 	"sgcodes7471/damsharaz.io-server/internal/modules/api/routes"
+	"sgcodes7471/damsharaz.io-server/internal/pkg"
 	// "sgcodes7471/damsharaz.io-server/internal/modules/api/handlers"
 )
 
@@ -19,13 +20,14 @@ func HTTPServer() {
 	// 	handlers.Ping ,
 	// ); 
 
-	PORT := ":5000";
+	PORT := os.Getenv("PORT");
 	
-	fmt.Println("HTTP Server starting on port" + PORT);
+	pkg.Log("HTTP Server starting on port" + PORT , "INFO");
+
 	err := http.ListenAndServe(PORT , r);
 	
 	if(err != nil) {
-		fmt.Println("Some Error occured in starting the server : ");
+		pkg.Log("Some Error occured in starting the server : " + err.Error() , "ERROR");
 	} 
 
 }

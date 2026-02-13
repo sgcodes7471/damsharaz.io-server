@@ -1,9 +1,10 @@
 package handlers
 
 import (
-	"fmt"
 	"net/http"
 	"encoding/json"
+	"strconv"
+	"sgcodes7471/damsharaz.io-server/internal/pkg"
 )
 
 type PingResponse struct {
@@ -13,7 +14,6 @@ type PingResponse struct {
 }
 
 func Ping(w http.ResponseWriter , r *http.Request) {
-	// fmt.Fprintf(w , "PING")
 
 	var res = PingResponse{
 		Code : http.StatusOK,
@@ -26,8 +26,9 @@ func Ping(w http.ResponseWriter , r *http.Request) {
 	err := json.NewEncoder(w).Encode(res)
 
 	if(err != nil) {
-		fmt.Println("Some error in internals/modules/api.Ping")
-		fmt.Println(err)
+		pkg.Log("Error in internals/modules/api.Ping : " + err.Error() , "ERROR");
 		return
 	}
+
+	pkg.Log("GET /PING " + strconv.Itoa(http.StatusOK) , "INFO");
 }

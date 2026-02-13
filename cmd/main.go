@@ -1,16 +1,16 @@
 package main
 
 import(
-	"fmt"
 	"github.com/joho/godotenv"
 	"sgcodes7471/damsharaz.io-server/internal/server" 
+	"sgcodes7471/damsharaz.io-server/internal/pkg" 
 )
 
 func main() {
 	err := godotenv.Load(".env");
 	
 	if(err != nil) {
-		fmt.Println("FAILED TO LOAD ENVs");
+		pkg.Log("FAILED TO LOAD ENVs" , "ERROR");
 		return;
 	}
 
