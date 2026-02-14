@@ -17,6 +17,5 @@ func main() {
 
 	db.Redis_Init();
 
-	server.WSServer()
 	server.HTTPServer()
 }

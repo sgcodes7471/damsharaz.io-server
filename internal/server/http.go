@@ -15,6 +15,8 @@ func HTTPServer() {
 	r.Use(middleware.Panic_Handler);
 	routes.Room_Routes(r);
 
+	r.Get("/ws" , WSServer);
+
 	// http.HandleFunc(
 	// 	"/ping" ,
 	// 	handlers.Ping ,

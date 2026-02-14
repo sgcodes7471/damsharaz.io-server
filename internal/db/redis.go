@@ -10,7 +10,7 @@ import (
 
 var Redis_Client *redis.Client;
 
-var ctx = context.Background();
+var CTX = context.Background();
 
 func Redis_Init() {
 	if(Redis_Client != nil) {
@@ -27,7 +27,7 @@ func Redis_Init() {
 }
 
 func Redis_Close() {
-	if(Redis_Client != nil) {
+	if(Redis_Client == nil) {
 		return
 	}
 
@@ -39,7 +39,7 @@ func Redis_Set(key string , value string) error {
 		return fmt.Errorf("redis client not initialized");
 	}
 
-	err := Redis_Client.Set(ctx , key , value , 3600*time.Second).Err();
+	err := Redis_Client.Set(CTX , key , value , 3600*time.Second).Err();
 	if(err != nil) {
 		return err;
 	}
@@ -52,7 +52,7 @@ func Redis_Get(key string) (string , error) {
 		return "" , fmt.Errorf("redis client not initialized");
 	}
 
-	value , err := Redis_Client.Get(ctx , key).Result();
+	value , err := Redis_Client.Get(CTX , key).Result();
 	if(err != nil) {
 		return "" , err;
 	}
