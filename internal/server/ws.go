@@ -30,7 +30,12 @@ func WSServer(w http.ResponseWriter , r *http.Request) {
 		}
 	}
 
-	
+	if _ , err := db.Redis_Get(roomId); err != nil {
+		pkg.Log("RoomId invalid! Room NOT FOUND in Redis" , "ERROR");
+		pkg.Log("GET /ws " + "400" , "INFO");
+		w.WriteHeader(404);
+		return
+	} 
 
 	conn, err := upgrader.Upgrade(w, r, nil);
 
