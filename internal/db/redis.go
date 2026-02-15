@@ -59,3 +59,16 @@ func Redis_Get(key string) (string , error) {
 
 	return value , nil;
 }
+
+func Redis_Delete(key string) error {
+	deleted , err := Redis_Client.Del(CTX , key).Result();
+	if err != nil {
+		return err;
+	}
+
+	if deleted == 0 {
+		return fmt.Errorf("Attempt to Delete non-existing");
+	}
+
+	return nil;
+}
