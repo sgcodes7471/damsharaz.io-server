@@ -2,9 +2,12 @@ package server
 
 import( 
 	"net/http"
+	"encoding/json"
 	"sgcodes7471/damsharaz.io-server/internal/pkg"
 	"sgcodes7471/damsharaz.io-server/internal/db"
+	"sgcodes7471/damsharaz.io-server/internal/types"
 	"github.com/gorilla/websocket"
+	"github.com/redis/go-redis/v9"
 )
 
 
@@ -30,13 +33,56 @@ func WSServer(w http.ResponseWriter , r *http.Request) {
 		}
 	}
 
-	if _ , err := db.Redis_Get(roomId); err != nil {
+	var value string;
+	value , err := db.Redis_Get(roomId);
+
+	if  err == redis.Nil {
 		pkg.Log("RoomId invalid! Room NOT FOUND in Redis" , "ERROR");
 		pkg.Log("GET /ws " + "400" , "INFO");
 		w.WriteHeader(404);
 		return
-	} 
+	} else if err != nil {
+		pkg.Log("Error in connecting to Redis : " + err.Error() , "ERROR");
+		pkg.Log("GET /ws " + "500" , "WARNING");
+		w.WriteHeader(500);
+		return
+	}
 
+	
+	var Room = types.Room_Object{
+		RoomId : roomId ,
+		Token : value ,
+		Den : nil ,
+		Ongoing : false ,
+	};
+
+	data , err := json.Marshal(Room);
+	
+	if err != nil {
+		pkg.Log("Error in Serializing Room Object : " + err.Error() , "ERROR");
+		pkg.Log("GET /ws " + "500" , "WARNING");
+		w.WriteHeader(500);
+		return
+	}
+
+	key := roomId + "_data";
+	if _ , err := db.Redis_Get(key); err == redis.Nil {
+		err = db.Redis_Set(key , string(data) , 0);
+		
+		if err != nil {
+			pkg.Log("Error in writing Room Object to Redis : " + err.Error() , "ERROR");
+			pkg.Log("GET /ws " + "500" , "WARNING");
+			w.WriteHeader(500);
+			return
+		}
+	} else if err != nil {
+		pkg.Log("Error in connecting to Redis : " + err.Error() , "ERROR");
+		pkg.Log("GET /ws " + "500" , "WARNING");
+		w.WriteHeader(500);
+		return
+	}
+
+	
 	conn, err := upgrader.Upgrade(w, r, nil);
 
 	if err != nil {
@@ -46,6 +92,7 @@ func WSServer(w http.ResponseWriter , r *http.Request) {
 		return
 	}
 	defer conn.Close();
+
 
 	sub := db.Redis_Client.Subscribe(db.CTX , roomId);
 	defer sub.Close();
@@ -65,7 +112,7 @@ func WSServer(w http.ResponseWriter , r *http.Request) {
 
 		finalMsgPayload := name + "/r/n" + string(msg);
 
-		if err := db.Redis_Client.Publish(db.CTX , roomId , finalMsgPayload).Err() ; err != nil {
+		if err := db.Redis_Publish(roomId , finalMsgPayload) ; err != nil {
 			pkg.Log("Error publishing to Redis in /ws from connection " + name + " : " + err.Error() , "ERROR");
 			pkg.Log("GET /ws " + "500" , "WARNING");
 			w.WriteHeader(500);

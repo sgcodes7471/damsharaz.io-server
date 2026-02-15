@@ -34,12 +34,12 @@ func Redis_Close() {
 	Redis_Client.Close();
 }
 
-func Redis_Set(key string , value string) error {
+func Redis_Set(key string , value string , expTime int) error {
 	if(Redis_Client == nil) {
 		return fmt.Errorf("redis client not initialized");
 	}
 
-	err := Redis_Client.Set(CTX , key , value , 3600*time.Second).Err();
+	err := Redis_Client.Set(CTX , key , value , time.Duration(expTime) * time.Second).Err();
 	if(err != nil) {
 		return err;
 	}
@@ -71,4 +71,9 @@ func Redis_Delete(key string) error {
 	}
 
 	return nil;
+}
+
+func Redis_Publish(roomId string , msg string) error {
+	err := Redis_Client.Publish(CTX , roomId , msg).Err();
+	return err;
 }

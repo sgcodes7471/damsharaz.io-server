@@ -41,7 +41,7 @@ func CreateRoom(w http.ResponseWriter , r *http.Request) {
 		return;
 	}
 
-	err = db.Redis_Set(roomId , token);
+	err = db.Redis_Set(roomId , token , 3600);
 
 	if(err != nil) {
 		pkg.Log("POST /api/v1/room " + "500" , "WARNING");
