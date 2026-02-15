@@ -15,7 +15,7 @@ func CreateToken(name string , roomId string) (string , error) {
 	token := jwt.NewWithClaims(
 		jwt.SigningMethodHS256 , 
 		jwt.MapClaims{
-			"rommId" : roomId ,
+			"roomId" : roomId ,
 			"admin" : name ,
 			"time" : time.Now().Unix(),
 		},
@@ -52,7 +52,7 @@ func VerifyToken(token string) error {
 
 
 func CreateRoomId() string {
-	CHARSET := "abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(){}:;',./<>/*-_+=|ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+	CHARSET := "abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 	LENGTH := 7
 	
 	rand.Seed(time.Now().UnixNano());

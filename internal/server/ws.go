@@ -30,6 +30,8 @@ func WSServer(w http.ResponseWriter , r *http.Request) {
 		}
 	}
 
+	
+
 	conn, err := upgrader.Upgrade(w, r, nil);
 
 	if err != nil {
@@ -56,9 +58,9 @@ func WSServer(w http.ResponseWriter , r *http.Request) {
 			return
 		}
 
-		finalMsgPayload := append([]byte(name + "/r/n") , msg...);
+		finalMsgPayload := name + "/r/n" + string(msg);
 
-		if err := db.Redis_Client.Publish(db.CTX , roomId , string(finalMsgPayload)).Err() ; err != nil {
+		if err := db.Redis_Client.Publish(db.CTX , roomId , finalMsgPayload).Err() ; err != nil {
 			pkg.Log("Error publishing to Redis in /ws from connection " + name + " : " + err.Error() , "ERROR");
 			pkg.Log("GET /ws " + "500" , "WARNING");
 			w.WriteHeader(500);
