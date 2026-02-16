@@ -76,8 +76,8 @@ func Parse_Payload(payload string) (string, string, string, error) {
 	payload_len := len(payload);
 
 	var index int = 0;
-	for index + 4 < payload_len {
-		if payload[index : index+4] == "/r/n" {
+	for index + 3 < payload_len {
+		if payload[index : (index + 4)] == "/r/n" {
 			if event_cut < 0 {
 				event_cut = index;
 			} else {
@@ -94,7 +94,7 @@ func Parse_Payload(payload string) (string, string, string, error) {
 
 	event := payload[0 : event_cut];
 	author := payload[(event_cut + 4) : author_cut];
-	msg := payload[(author_cut + 4) : payload_len];
+	msg := payload[min(payload_len - 4 , author_cut + 4) : (payload_len - 4)];
 
 	return event, author, msg, nil
 }
