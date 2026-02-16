@@ -11,3 +11,8 @@ type Room_Object struct {
 	Ongoing bool
 }
 
+type Client_Object struct {
+	Conn *websocket.Conn 
+	Name string
+}
+

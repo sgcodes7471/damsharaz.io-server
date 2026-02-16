@@ -99,6 +99,28 @@ func WSServer(w http.ResponseWriter , r *http.Request) {
 
 	ch := sub.Channel();
 
+	client := types.Client_Object{
+		Conn : conn ,
+		Name : name ,
+	}
+
+	data , err = json.Marshal(client);
+
+	if err != nil {
+		pkg.Log("Error in Serializing Client Object : " + err.Error() , "ERROR");
+		pkg.Log("GET /ws " + "500" , "WARNING");
+		w.WriteHeader(500);
+		return
+	}
+
+	key = roomId + "_member";
+	if err := db.Redis_Client.SAdd(db.CTX , key , data).Err(); err != nil {
+		pkg.Log("Error in adding member to Redis : " + err.Error() , "ERROR");
+		pkg.Log("GET /ws " + "500" , "WARNING");
+		w.WriteHeader(500);
+		return
+	}
+
 
 	go func() {
 		_, msg, err := conn.ReadMessage();

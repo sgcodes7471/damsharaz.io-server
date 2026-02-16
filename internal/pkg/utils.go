@@ -67,3 +67,34 @@ func CreateRoomId() string {
 
 	return roomId
 }
+
+
+func Parse_Payload(payload string) (string, string, string, error) {
+	var event_cut int = -1;
+	var author_cut int = -1;
+
+	payload_len := len(payload);
+
+	var index int = 0;
+	for index + 4 < payload_len {
+		if payload[index : index+4] == "/r/n" {
+			if event_cut < 0 {
+				event_cut = index;
+			} else {
+				author_cut = index;
+				break;
+			}
+		}
+		index = index + 1;
+	}
+
+	if event_cut == -1 || author_cut == -1 {
+		return "" , "" , "" , fmt.Errorf("invalid format for the payload");
+	}
+
+	event := payload[0 : event_cut];
+	author := payload[(event_cut + 4) : author_cut];
+	msg := payload[(author_cut + 4) : payload_len];
+
+	return event, author, msg, nil
+}
