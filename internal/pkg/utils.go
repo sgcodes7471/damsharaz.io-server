@@ -70,31 +70,31 @@ func CreateRoomId() string {
 
 
 func Parse_Payload(payload string) (string, string, string, error) {
-	var event_cut int = -1;
 	var author_cut int = -1;
+	var event_cut int = -1;
 
 	payload_len := len(payload);
 
 	var index int = 0;
 	for index + 3 < payload_len {
 		if payload[index : (index + 4)] == "/r/n" {
-			if event_cut < 0 {
-				event_cut = index;
-			} else {
+			if author_cut < 0 {
 				author_cut = index;
+			} else {
+				event_cut = index;
 				break;
 			}
 		}
 		index = index + 1;
 	}
 
-	if event_cut == -1 || author_cut == -1 {
+	if author_cut == -1 || event_cut == -1 {
 		return "" , "" , "" , fmt.Errorf("invalid format for the payload");
 	}
 
-	event := payload[0 : event_cut];
-	author := payload[(event_cut + 4) : author_cut];
-	msg := payload[min(payload_len - 4 , author_cut + 4) : (payload_len - 4)];
+	author := payload[0 : author_cut];
+	event := payload[(author_cut + 4) : event_cut];
+	msg := payload[min(payload_len - 4 , event_cut + 4) : (payload_len - 4)];
 
 	return event, author, msg, nil
 }

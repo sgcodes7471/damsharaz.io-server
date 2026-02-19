@@ -6,9 +6,10 @@ import (
 )
 
 func TestParsePayload_Valid(t *testing.T) {
-	payload := "JOIN/r/nDemo/r/nHello World/r/n"
+	payload := "Demo/r/nJOIN/r/nHello World/r/n"
 
 	event, author, msg, err := pkg.Parse_Payload(payload)
+
 
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
@@ -38,7 +39,7 @@ func TestParsePayload_Invalid_NoDelimiters(t *testing.T) {
 }
 
 func TestParsePayload_Invalid_OneDelimiter(t *testing.T) {
-	payload := "JOIN/r/nDEMO"
+	payload := "DEMO/r/nJOIN"
 
 	_, _, _, err := pkg.Parse_Payload(payload)
 
@@ -48,7 +49,7 @@ func TestParsePayload_Invalid_OneDelimiter(t *testing.T) {
 }
 
 func TestParsePayload_EmptyMessage(t *testing.T) {
-	payload := "MSG/r/nUser/r/n"
+	payload := "User/r/nMSG/r/n"
 
 	event, author, msg, err := pkg.Parse_Payload(payload)
 
