@@ -4,15 +4,16 @@ import(
 	"github.com/gorilla/websocket"
 )
 
-type Room_Object struct {
-	RoomId string 
-	Token string
-	Den *websocket.Conn
-	Ongoing bool
-}
-
 type Client_Object struct {
 	Conn *websocket.Conn 
 	Name string
 }
+
+type Room_Object struct {
+	RoomId string 
+	Token string
+	Den Client_Object
+	Ongoing bool
+}
+
 

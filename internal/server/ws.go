@@ -10,11 +10,12 @@ import(
 	"github.com/redis/go-redis/v9"
 )
 
+var Rooms_Connections = make(map[string][]types.Client_Object);
 
 var upgrader = websocket.Upgrader{};
 
 func WSServer(w http.ResponseWriter , r *http.Request) {
-	roomId := r.URL.Query().Get("roomId");
+	roomId := r.Header.Get("roomId");
 	name := r.URL.Query().Get("name");
 
 	if roomId == "" || name == "" {
@@ -103,6 +104,8 @@ func WSServer(w http.ResponseWriter , r *http.Request) {
 		Conn : conn ,
 		Name : name ,
 	}
+
+	Rooms_Connections[roomId] = append(Rooms_Connections[roomId] , client);
 
 	data , err = json.Marshal(client);
 
