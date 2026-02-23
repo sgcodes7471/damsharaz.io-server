@@ -10,34 +10,6 @@ import(
 	"sgcodes7471/damsharaz.io-server/internal/types"
 )
 
-/**
-	START event publish
-
-	1. check if has a valid admin token - done
-	2. choose a person from the redis members randomly - done
-	3. update that connection in the redis room model in Den - done
- 	4. publish to redis - done
-	
-
-	ANSWER event publish
-
-	1. anyone can send with a format of <author>/r/nANSWERr/n<movie>
-	2. simply publish to redis
-
-
-	WINNER event publish
-
-	1. only Den can send - the name of the Winner in msg
-	2. simply publish-sub
-
-
-	LEAVE or DISCONNECT event publish
-
-	1. clear Conn from the redis
-	2. publish LEAVE/DISCONNECTED event
-*/
-
-
 func Publish(payload string , r *http.Request) error {
 	event , author, msg , err := pkg.Parse_Payload(payload);
 
