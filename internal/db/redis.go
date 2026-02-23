@@ -73,7 +73,16 @@ func Redis_Delete(key string) error {
 	return nil;
 }
 
-func Redis_Publish(roomId string , msg string) error {
-	err := Redis_Client.Publish(CTX , roomId , msg).Err();
+func Redis_Publish(key string , msg string) error {
+	err := Redis_Client.Publish(CTX , key , msg).Err();
 	return err;
+}
+
+func Redis_Random(key string) (string, error) {
+	data, err := Redis_Client.SRandMember(key).Result();
+	if err != nil {
+		return "" , err;
+	}
+
+	return data , nil;
 }

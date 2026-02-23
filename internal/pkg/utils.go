@@ -31,7 +31,7 @@ func CreateToken(name string , roomId string) (string , error) {
 }
 
 
-func VerifyToken(token string) error {
+func VerifyToken(token string) (jwt.MapClaims , error) {
 	validity, err := jwt.Parse(
 		token , 
 		func(token *jwt.Token) (interface{} , error) {
@@ -40,14 +40,19 @@ func VerifyToken(token string) error {
 	);
 
 	if(err != nil) {
-		return err;
+		return nil, err;
 	}
 
 	if !validity.Valid {
-		return fmt.Errorf("invalid token");
+		return nil, fmt.Errorf("invalid token");
 	}
 
-	return nil;
+	claims, ok := token.Claims.(jwt.MapClaims);
+	if !ok {
+		return nil, fmt.Errorf("Could not parse Claims");
+	}
+
+	return claims, nil;
 }
 
 
