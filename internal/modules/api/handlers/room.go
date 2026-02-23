@@ -24,9 +24,7 @@ func CreateRoom(w http.ResponseWriter , r *http.Request) {
 
 	var reqBody CreateRoomRequest;
 	if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
-		pkg.Log("Error in Decoding the Request Body " + err.Error() , "ERROR")
-		pkg.Log("POST /api/v1/room " + "400" , "INFO");
-		w.WriteHeader(400);
+		pkg.Api_Error("Error in Decoding the Request Body " + err.Error() , "POST /api/v1/room" , 400 , w);
 		return;
 	}
 
@@ -35,17 +33,14 @@ func CreateRoom(w http.ResponseWriter , r *http.Request) {
 	token , err := pkg.CreateToken(reqBody.Name , roomId)
 
 	if(err != nil) {
-		pkg.Log("Error in Creating Token : " + err.Error() , "ERROR");
-		pkg.Log("POST /api/v1/room " + "500" , "WARNING");
-		w.WriteHeader(500);
+		pkg.Api_Error("Error in Creating Token : " + err.Error() , "POST /api/v1/room" , 500 , w);
 		return;
 	}
 
 	err = db.Redis_Set(roomId , token , 3600);
 
 	if(err != nil) {
-		pkg.Log("POST /api/v1/room " + "500" , "WARNING");
-		w.WriteHeader(500);
+		pkg.Api_Error("Error in setting the token in redis : " + err.Error() , "POST /api/v1/room" , 500 , w);
 		panic(err);
 		return;
 	}
@@ -71,9 +66,7 @@ func CreateRoom(w http.ResponseWriter , r *http.Request) {
 	err = json.NewEncoder(w).Encode(res);
 
 	if(err != nil) {
-		pkg.Log("Error occured in CreateRoom() : " + err.Error() , "ERROR");
-		pkg.Log("POST /api/v1/room " + "500" , "WARNING");
-		w.WriteHeader(500);
+		pkg.Api_Error("Error occured in CreateRoom() : " + err.Error() , "POST /api/v1/room" , 500 , w);
 		return;
 	}
 

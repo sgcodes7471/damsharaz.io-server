@@ -83,7 +83,7 @@ func Publish(payload string , r *http.Request) error {
 			return err;
 		}
 
-		if err := db.Redis_Set(roomId, data) ; err != nil {
+		if err := db.Redis_Set(roomId + "_data", data) ; err != nil {
 			return err;
 		}
 

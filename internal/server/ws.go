@@ -19,17 +19,13 @@ func WSServer(w http.ResponseWriter , r *http.Request) {
 	name := r.URL.Query().Get("name");
 
 	if roomId == "" || name == "" {
-		pkg.Log("Required Query Params missing in /ws" , "ERROR");
-		pkg.Log("GET /ws " + "400" , "INFO");
-		w.WriteHeader(400);
+		pkg.Api_Error("Required Query Params missing in /ws" , "GET /ws" , 400 , w);
 		return
 	}
 
 	for _, _ch := range name {
 		if _ch == '/' {
-			pkg.Log("Name has '/' : FORBIDDEN" , "ERROR");
-			pkg.Log("GET /ws " + "403" , "INFO");
-			w.WriteHeader(403);
+			pkg.Api_Error("Name has '/' : FORBIDDEN" , "GET /ws" , 403 , w);
 			return
 		}
 	}
@@ -38,14 +34,10 @@ func WSServer(w http.ResponseWriter , r *http.Request) {
 	value , err := db.Redis_Get(roomId);
 
 	if  err == redis.Nil {
-		pkg.Log("RoomId invalid! Room NOT FOUND in Redis" , "ERROR");
-		pkg.Log("GET /ws " + "400" , "INFO");
-		w.WriteHeader(404);
+		pkg.Api_Error("RoomId invalid! Room NOT FOUND in Redis" , "GET /ws" , 404 , w);
 		return
 	} else if err != nil {
-		pkg.Log("Error in connecting to Redis : " + err.Error() , "ERROR");
-		pkg.Log("GET /ws " + "500" , "WARNING");
-		w.WriteHeader(500);
+		pkg.Api_Error("Error in connecting to Redis : " + err.Error() , "GET /ws" , 500 , w);
 		return
 	}
 
@@ -60,9 +52,7 @@ func WSServer(w http.ResponseWriter , r *http.Request) {
 	data , err := json.Marshal(Room);
 	
 	if err != nil {
-		pkg.Log("Error in Serializing Room Object : " + err.Error() , "ERROR");
-		pkg.Log("GET /ws " + "500" , "WARNING");
-		w.WriteHeader(500);
+		pkg.Api_Error("Error in Serializing Room Object : " + err.Error() , "GET /ws" , 500 , w);
 		return
 	}
 
@@ -71,15 +61,11 @@ func WSServer(w http.ResponseWriter , r *http.Request) {
 		err = db.Redis_Set(key , string(data) , 0);
 		
 		if err != nil {
-			pkg.Log("Error in writing Room Object to Redis : " + err.Error() , "ERROR");
-			pkg.Log("GET /ws " + "500" , "WARNING");
-			w.WriteHeader(500);
+			pkg.Api_Error("Error in writing Room Object to Redis : " + err.Error() , "GET /ws" , 500 , w);
 			return
 		}
 	} else if err != nil {
-		pkg.Log("Error in connecting to Redis : " + err.Error() , "ERROR");
-		pkg.Log("GET /ws " + "500" , "WARNING");
-		w.WriteHeader(500);
+		pkg.Api_Error("Error in connecting to Redis : " + err.Error() , "GET /ws" , 500 , w);
 		return
 	}
 
@@ -87,9 +73,7 @@ func WSServer(w http.ResponseWriter , r *http.Request) {
 	conn, err := upgrader.Upgrade(w, r, nil);
 
 	if err != nil {
-		pkg.Log("Websocket did not start : " + err.Error() , "ERROR");
-		pkg.Log("GET /ws " + "500" , "WARNING");
-		w.WriteHeader(500);
+		pkg.Api_Error("Websocket did not start : " + err.Error() , "GET /ws" , 500 , w);
 		return
 	}
 	defer conn.Close();
@@ -110,17 +94,13 @@ func WSServer(w http.ResponseWriter , r *http.Request) {
 	data , err = json.Marshal(client);
 
 	if err != nil {
-		pkg.Log("Error in Serializing Client Object : " + err.Error() , "ERROR");
-		pkg.Log("GET /ws " + "500" , "WARNING");
-		w.WriteHeader(500);
+		pkg.Api_Error("Error in Serializing Client Object : " + err.Error() , "GET /ws" , 500 , w);
 		return
 	}
 
 	key = roomId + "_member";
 	if err := db.Redis_Client.SAdd(db.CTX , key , data).Err(); err != nil {
-		pkg.Log("Error in adding member to Redis : " + err.Error() , "ERROR");
-		pkg.Log("GET /ws " + "500" , "WARNING");
-		w.WriteHeader(500);
+		pkg.Api_Error("Error in adding member to Redis : " + err.Error() , "GET /ws" , 500 , w);
 		return
 	}
 
@@ -129,18 +109,14 @@ func WSServer(w http.ResponseWriter , r *http.Request) {
 		_, msg, err := conn.ReadMessage();
 
 		if(err != nil) {
-			pkg.Log("Error reading in /ws from connection " + name + " : " + err.Error() , "ERROR");
-			pkg.Log("GET /ws " + "500" , "WARNING");
-			w.WriteHeader(500);
+			pkg.Api_Error("Error reading in /ws from connection " + name + " : " + err.Error() , "GET /ws" , 500 , w);
 			return
 		}
 
 		finalMsgPayload := name + "/r/n" + string(msg);
 
 		if err := db.Redis_Publish(roomId , finalMsgPayload) ; err != nil {
-			pkg.Log("Error publishing to Redis in /ws from connection " + name + " : " + err.Error() , "ERROR");
-			pkg.Log("GET /ws " + "500" , "WARNING");
-			w.WriteHeader(500);
+			pkg.Api_Error("Error publishing to Redis in /ws from connection " + name + " : " + err.Error() , "GET /ws" , 500 , w);
 			return
 		}
 	} ();
@@ -148,9 +124,7 @@ func WSServer(w http.ResponseWriter , r *http.Request) {
 
 	for msg := range ch {
 		if err := conn.WriteMessage(websocket.TextMessage , []byte(msg.Payload)); err != nil {
-			pkg.Log("Error writing from Redis in /ws to connection " + name + " : " + err.Error() , "ERROR");
-			pkg.Log("GET /ws " + "500" , "WARNING");
-			w.WriteHeader(500);
+			pkg.Api_Error("Error writing from Redis in /ws to connection " + name + " : " + err.Error() , "GET /ws" , 500 , w);
 			return
 		}
 	}
