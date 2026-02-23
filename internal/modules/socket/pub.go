@@ -38,7 +38,7 @@ import(
 */
 
 
-func Publish(payload string , conn *websocket.Conn , r *http.Request) error {
+func Publish(payload string , r *http.Request) error {
 	event , author, msg , err := pkg.Parse_Payload(payload);
 
 	if err != nil {

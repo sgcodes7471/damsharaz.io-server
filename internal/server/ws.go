@@ -53,7 +53,7 @@ func WSServer(w http.ResponseWriter , r *http.Request) {
 	var Room = types.Room_Object{
 		RoomId : roomId ,
 		Token : value ,
-		Den : nil ,
+		Den : types.Client_Object{} ,
 		Ongoing : false ,
 	};
 

@@ -47,7 +47,7 @@ func VerifyToken(token string) (jwt.MapClaims , error) {
 		return nil, fmt.Errorf("invalid token");
 	}
 
-	claims, ok := token.Claims.(jwt.MapClaims);
+	claims, ok := validity.Claims.(jwt.MapClaims);
 	if !ok {
 		return nil, fmt.Errorf("Could not parse Claims");
 	}

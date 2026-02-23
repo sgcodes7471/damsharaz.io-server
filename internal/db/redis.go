@@ -79,7 +79,7 @@ func Redis_Publish(key string , msg string) error {
 }
 
 func Redis_Random(key string) (string, error) {
-	data, err := Redis_Client.SRandMember(key).Result();
+	data, err := Redis_Client.SRandMember(CTX , key).Result();
 	if err != nil {
 		return "" , err;
 	}

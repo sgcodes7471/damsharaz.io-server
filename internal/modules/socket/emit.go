@@ -1,13 +1,7 @@
 package socket
 
 import( 
-	"net/http"
-	"encoding/json"
-	"sgcodes7471/damsharaz.io-server/internal/pkg"
-	"sgcodes7471/damsharaz.io-server/internal/db"
-	"sgcodes7471/damsharaz.io-server/internal/types"
 	"github.com/gorilla/websocket"
-	"github.com/redis/go-redis/v9"
 )
 
 /**
@@ -26,3 +20,7 @@ import(
 	2. else publish event
 
 */
+
+func Emit(conn *websocket.Conn) error {
+	return nil
+}
